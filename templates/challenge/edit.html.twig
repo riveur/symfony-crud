@@ -1,0 +1,26 @@
+{% extends 'layouts/default.html.twig' %} {% block title %} Edit Challenge {% endblock %} {% block body %}
+<section class="hero">
+		<div class="hero-body pb-0">
+			<p class="title">
+				Edit
+			</p>
+			<p class="subtitle">
+				Details of challenge {{ challenge.id }}
+			</p>
+		</div>
+	</section>
+	<section class="section">
+		<div class="content">
+			<nav class="level">
+				<div class="level-left">
+					<div class="level-item">
+						<a href="{{ path('app_challenge_index') }}" class="button is-primary">Back to list</a>
+					</div>
+				</div>
+			</nav>
+			<div class="box">
+				{{ include('challenge/_form.html.twig', {button_label: 'Update'}) }}
+			</div>
+		</div>
+	</section>
+{% endblock %}

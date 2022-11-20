@@ -1,0 +1,73 @@
+{% extends 'layouts/default.html.twig' %}
+
+{% block title %}Challenge
+{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <div class="hero-body pb-0">
+            <p class="title">
+                Show
+            </p>
+            <p class="subtitle">
+                Detail of challenge
+                {{ challenge.id }}
+            </p>
+        </div>
+    </section>
+    <section class="section">
+        <nav class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <a href="{{ path('app_challenge_index') }}" class="button is-primary">Back to list</a>
+                </div>
+            </div>
+            <div class="level-right">
+                <div class="level-item">
+                    <a href="{{ path('app_challenge_edit', {'id': challenge.id}) }}" class="button is-info">Edit</a>
+                </div>
+                <div class="level-item">
+                    {{ include('challenge/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+            <div class="box">
+                <table class="table is-striped is-hoverable">
+                    <tbody>
+                        <tr>
+                            <td>#</td>
+                            <td>{{ challenge.id }}</td>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td>{{ challenge.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>Point</td>
+                            <td>{{ challenge.point }}</td>
+                        </tr>
+                        <tr>
+                            <td>Completed</td>
+                            <td>{{ challenge.completed ? "Yes" : "No" }}</td>
+                        </tr>
+                        <tr>
+                            <td>Created at</td>
+                            <td>
+                                {{ challenge.createdAt ? challenge.createdAt|date('d/m/Y H:i:s') : '' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Updated at</td>
+                            <td>
+                                {{ challenge.updatedAt ? challenge.createdAt|date('d/m/Y H:i:s') : '' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

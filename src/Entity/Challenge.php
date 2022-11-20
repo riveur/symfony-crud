@@ -24,13 +24,19 @@ class Challenge
     private ?int $point = null;
 
     #[ORM\Column]
-    private ?bool $completed = null;
+    private ?bool $completed = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

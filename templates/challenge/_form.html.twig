@@ -1,0 +1,25 @@
+{% form_theme form 'layouts/bulma_layout.html.twig' %}
+
+{{ form_start(form) }}
+<div class="field">
+	{{ form_label(form.title) }}
+	<div class="control">
+		{{ form_widget(form.title) }}
+	</div>
+</div>
+<div class="field">
+	{{ form_label(form.description) }}
+	<div class="control">
+		{{ form_widget(form.description) }}
+	</div>
+</div>
+
+<div class="field">
+	{{ form_label(form.point) }}
+	<div class="control">
+		{{ form_widget(form.point) }}
+	</div>
+</div>
+{{ form_widget(form) }}
+<button class="button is-success">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

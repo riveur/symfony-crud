@@ -1,0 +1,69 @@
+{% extends 'layouts/default.html.twig' %}
+
+{% block title %}Challenge index{% endblock %}
+
+{% block body %}
+	<section class="hero">
+		<div class="hero-body pb-0">
+			<p class="title">
+				Index
+			</p>
+			<p class="subtitle">
+				List of all challenges
+			</p>
+		</div>
+	</section>
+	<section class="section">
+		<nav class="level">
+			<div class="level-left">
+				<div class="level-item">
+					<a href="{{ path('app_challenge_new') }}" class="button is-primary">Create new</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="content">
+			<div class="box">
+				<table class="table is-striped is-hoverable">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Title</th>
+							<th>Point</th>
+							<th>Completed</th>
+							<th>Created at</th>
+							<th>Updated at</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for challenge in challenges %}
+							<tr>
+								<td>{{ challenge.id }}</td>
+								<td>{{ challenge.title }}</td>
+								<td>{{ challenge.point }}</td>
+								<td>{{ challenge.completed ? "Yes" : "No" }}</td>
+								<td>
+									{{ challenge.createdAt ? challenge.createdAt|date('d/m/Y H:i:s') : '' }}
+								</td>
+								<td>
+									{{ challenge.updatedAt ? challenge.updatedAt|date('d/m/Y H:i:s') : '' }}
+								</td>
+								<td>
+									<div class="is-flex is-justify-content-center is-align-items-center">
+										<a class="is-size-6 mx-1" href="{{ path('app_challenge_show', { id: challenge.id }) }}"><i class="fa-regular fa-eye"></i></a>
+										<a class="is-size-6 mx-1" href="{{ path('app_challenge_edit', { id: challenge.id }) }}"><i class="fa-regular fa-pen-to-square"></i></a>
+									</div>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="8">no records found</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+{% endblock %}
