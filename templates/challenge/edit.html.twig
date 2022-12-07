@@ -1,11 +1,16 @@
-{% extends 'layouts/default.html.twig' %} {% block title %} Edit Challenge {% endblock %} {% block body %}
-<section class="hero">
+{% extends 'layouts/default.html.twig' %}
+{% block title %}
+	Edit Challenge
+{% endblock %}
+{% block body %}
+	<section class="hero">
 		<div class="hero-body pb-0">
 			<p class="title">
 				Edit
 			</p>
 			<p class="subtitle">
-				Details of challenge {{ challenge.id }}
+				Details of challenge
+				{{ challenge.id }}
 			</p>
 		</div>
 	</section>

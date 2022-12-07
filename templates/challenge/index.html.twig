@@ -1,6 +1,8 @@
 {% extends 'layouts/default.html.twig' %}
 
-{% block title %}Challenge index{% endblock %}
+{% block title %}
+	Challenge index
+{% endblock %}
 
 {% block body %}
 	<section class="hero">
@@ -51,8 +53,12 @@
 								</td>
 								<td>
 									<div class="is-flex is-justify-content-center is-align-items-center">
-										<a class="is-size-6 mx-1" href="{{ path('app_challenge_show', { id: challenge.id }) }}"><i class="fa-regular fa-eye"></i></a>
-										<a class="is-size-6 mx-1" href="{{ path('app_challenge_edit', { id: challenge.id }) }}"><i class="fa-regular fa-pen-to-square"></i></a>
+										<a class="is-size-6 mx-1" href="{{ path('app_challenge_show', { id: challenge.id }) }}">
+											<i class="fa-regular fa-eye"></i>
+										</a>
+										<a class="is-size-6 mx-1" href="{{ path('app_challenge_edit', { id: challenge.id }) }}">
+											<i class="fa-regular fa-pen-to-square"></i>
+										</a>
 									</div>
 								</td>
 							</tr>
