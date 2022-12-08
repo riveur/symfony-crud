@@ -52,7 +52,7 @@ class AuthController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('app_login', ['error' => null, 'last_username' => ''], Response::HTTP_PERMANENTLY_REDIRECT);
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('auth/register.html.twig', [
@@ -60,7 +60,7 @@ class AuthController extends AbstractController
         ]);
     }
 
-    #[Route('/login', name: 'app_login', methods: ['GET', 'POST'])]
+    #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authUtils): Response
     {
         $error = $authUtils->getLastAuthenticationError();
