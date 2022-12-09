@@ -20,7 +20,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank()]
-    #[Assert\Unique()]
     #[Assert\Length(max: 180)]
     private ?string $username = null;
 
@@ -33,16 +32,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\ManyToMany(targetEntity: Challenge::class, inversedBy: 'users')]
-    private Collection $challenge;
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Challenge::class)]
+    private Collection $myChallenges;
 
-    #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Challenge::class)]
-    private Collection $challenges;
+    #[ORM\OneToMany(targetEntity: UserChallenge::class, mappedBy: "user")]
+    private Collection $userChallenges;
 
     public function __construct()
     {
-        $this->challenge = new ArrayCollection();
-        $this->challenges = new ArrayCollection();
+        $this->myChallenges = new ArrayCollection();
+        $this->userChallenges = new ArrayCollection();
+        $this->roles = $this->getRoles();
     }
 
     public function getId(): ?int
@@ -79,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_ADMIN';
+        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
@@ -118,32 +118,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Challenge>
      */
-    public function getChallenge(): Collection
+    public function getMyChallenges(): Collection
     {
-        return $this->challenge;
-    }
-
-    public function addChallenge(Challenge $challenge): self
-    {
-        if (!$this->challenge->contains($challenge)) {
-            $this->challenge->add($challenge);
-        }
-
-        return $this;
-    }
-
-    public function removeChallenge(Challenge $challenge): self
-    {
-        $this->challenge->removeElement($challenge);
-
-        return $this;
+        return $this->myChallenges;
     }
 
     /**
-     * @return Collection<int, Challenge>
+     * Get the value of userChallenges
+     *
+     * @return ArrayCollection|UserChallenge[]
      */
-    public function getChallenges(): Collection
+    public function getUserChallenges()
     {
-        return $this->challenges;
+        return $this->userChallenges;
+    }
+
+    public function addUserChallenge(Challenge $challenge)
+    {
+        if (!$this->userChallenges->contains($challenge)) {
+            $this->userChallenges[] = $challenge;
+        }
+    }
+
+    public function removeUserChallenge(Challenge $challenge)
+    {
+        if ($this->userChallenges->contains($challenge)) {
+            $this->userChallenges->removeElement($challenge);
+        }
     }
 }

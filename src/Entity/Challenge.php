@@ -26,26 +26,23 @@ class Challenge
     private ?int $point = null;
 
     #[ORM\Column]
-    private ?bool $completed = false;
-
-    #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'challenge')]
-    private Collection $users;
-
-    #[ORM\ManyToOne(inversedBy: 'challenges')]
+    #[ORM\ManyToOne(inversedBy: 'myChallenges')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $created_by = null;
+    private ?User $author = null;
+
+    #[ORM\OneToMany(targetEntity: UserChallenge::class, mappedBy: "challenge", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private Collection $challengeUsers;
 
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
-        $this->users = new ArrayCollection();
+        $this->challengeUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,18 +86,6 @@ class Challenge
         return $this;
     }
 
-    public function isCompleted(): ?bool
-    {
-        return $this->completed;
-    }
-
-    public function setCompleted(bool $completed): self
-    {
-        $this->completed = $completed;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -125,41 +110,42 @@ class Challenge
         return $this;
     }
 
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
     /**
-     * @return Collection<int, User>
+     * Get the value of userChallenges
+     *
+     * @return ArrayCollection|UserChallenge[]
      */
-    public function getUsers(): Collection
+    public function getChallengeUsers()
     {
-        return $this->users;
+        return $this->challengeUsers;
     }
 
-    public function addUser(User $user): self
+    public function addUserChallenge(UserChallenge $userChallenge): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->addChallenge($this);
+        if (!$this->challengeUsers->contains($userChallenge)) {
+            $this->challengeUsers[] = $userChallenge;
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeUserChallenge(UserChallenge $userChallenge): self
     {
-        if ($this->users->removeElement($user)) {
-            $user->removeChallenge($this);
+        if ($this->challengeUsers->contains($userChallenge)) {
+            $this->challengeUsers->removeElement($userChallenge);
         }
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?User
-    {
-        return $this->created_by;
-    }
-
-    public function setCreatedBy(?User $created_by): self
-    {
-        $this->created_by = $created_by;
 
         return $this;
     }
