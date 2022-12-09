@@ -104,6 +104,17 @@ class ChallengeRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findAllByAuthor(User $user)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c', 'author')
+            ->innerJoin('c.author', 'author')
+            ->andWhere('c.author = :user')
+            ->setParameter('user', $user->getId())
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Challenge[] Returns an array of Challenge objects
     //     */

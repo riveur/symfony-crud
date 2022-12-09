@@ -22,12 +22,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChallengeController extends AbstractController
 {
     #[Route('/', name: 'app_challenge_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(ChallengeRepository $challengeRepository): Response
     {
-        $user = $this->getUser();
-
         return $this->render('challenge/index.html.twig', [
-            'challenges' => $user->getMyChallenges(),
+            'challenges' => $challengeRepository->findAllByAuthor($this->getUser()),
         ]);
     }
 
