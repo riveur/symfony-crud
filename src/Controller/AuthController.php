@@ -23,6 +23,10 @@ class AuthController extends AbstractController
         UserPasswordHasherInterface $passwordHasher
     ) {
 
+        if ($this->getUser()) {
+            return $this->redirectToRoute('dashboard');
+        }
+
         if ($request->isMethod('POST')) {
 
             $data = (array) $request->request->getIterator();
@@ -63,6 +67,10 @@ class AuthController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authUtils): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('dashboard');
+        }
+
         $error = $authUtils->getLastAuthenticationError();
         $lastUsername = $authUtils->getLastUsername();
 
