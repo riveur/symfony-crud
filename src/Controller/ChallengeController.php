@@ -3,21 +3,31 @@
 namespace App\Controller;
 
 use App\Entity\Challenge;
+use App\Entity\UserChallenge;
 use App\Form\ChallengeType;
 use App\Repository\ChallengeRepository;
+use DateTimeImmutable;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * 
+ * @method \App\Entity\User getUser()
+ */
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/challenge')]
 class ChallengeController extends AbstractController
 {
     #[Route('/', name: 'app_challenge_index', methods: ['GET'])]
-    public function index(ChallengeRepository $challengeRepository): Response
+    public function index(): Response
     {
+        $user = $this->getUser();
+
         return $this->render('challenge/index.html.twig', [
-            'challenges' => $challengeRepository->findAll(),
+            'challenges' => $user->getMyChallenges(),
         ]);
     }
 
@@ -29,6 +39,9 @@ class ChallengeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $challenge
+                ->setAuthor($this->getUser());
+
             $challengeRepository->save($challenge, true);
 
             return $this->redirectToRoute('app_challenge_index', [], Response::HTTP_SEE_OTHER);
@@ -54,7 +67,12 @@ class ChallengeController extends AbstractController
         $form = $this->createForm(ChallengeType::class, $challenge);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted() &&
+            $form->isValid() &&
+            $challenge->getAuthor()->getId() === $this->getUser()->getId()
+        ) {
+            $challenge->setUpdatedAt(new DateTimeImmutable());
             $challengeRepository->save($challenge, true);
 
             return $this->redirectToRoute('app_challenge_index', [], Response::HTTP_SEE_OTHER);
@@ -69,10 +87,70 @@ class ChallengeController extends AbstractController
     #[Route('/{id}', name: 'app_challenge_delete', methods: ['POST'])]
     public function delete(Request $request, Challenge $challenge, ChallengeRepository $challengeRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$challenge->getId(), $request->request->get('_token'))) {
+        if (
+            $this->isCsrfTokenValid('delete' . $challenge->getId(), $request->request->get('_token')) &&
+            $challenge->getAuthor()->getId() === $this->getUser()->getId()
+        ) {
             $challengeRepository->remove($challenge, true);
         }
 
         return $this->redirectToRoute('app_challenge_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/accept', name: 'app_challenge_accept', methods: ['POST'])]
+    public function accept(Request $request, Challenge $challenge, ChallengeRepository $challengeRepository): Response
+    {
+        if ($this->isCsrfTokenValid('accept' . $challenge->getId(), $request->request->get('_token'))) {
+            $userChallenge = (new UserChallenge())
+                ->setChallenge($challenge)
+                ->setUser($this->getUser())
+                ->setCompleted(false);
+
+            $challenge->addUserChallenge($userChallenge);
+
+            $challengeRepository->save($challenge, true);
+        }
+
+        return $this->redirectToRoute('dashboard', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/give-up', name: 'app_challenge_give_up', methods: ['POST'])]
+    public function giveUp(Request $request, ChallengeRepository $challengeRepository): Response
+    {
+        $challenge = $challengeRepository->findWithUsers($request->get('id'));
+
+        if ($this->isCsrfTokenValid('give-up' . $challenge->getId(), $request->request->get('_token'))) {
+            /** @var \App\Entity\UserChallenge $userChallenge */
+            $userChallenge = $challenge
+                ->getChallengeUsers()
+                ->filter(fn (UserChallenge $userChallenge) => $userChallenge->getUser() === $this->getUser())
+                ->first();
+
+            $challenge->removeUserChallenge($userChallenge);
+
+            $challengeRepository->save($challenge, true);
+        }
+
+        return $this->redirectToRoute('dashboard', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/complete', name: 'app_challenge_complete', methods: ['POST'])]
+    public function complete(Request $request, ChallengeRepository $challengeRepository): Response
+    {
+        $challenge = $challengeRepository->findWithUsers($request->get('id'));
+
+        if ($this->isCsrfTokenValid('complete' . $challenge->getId(), $request->request->get('_token'))) {
+            /** @var \App\Entity\UserChallenge $userChallenge */
+            $userChallenge = $challenge
+                ->getChallengeUsers()
+                ->filter(fn (UserChallenge $userChallenge) => $userChallenge->getUser() === $this->getUser())
+                ->first();
+
+            $userChallenge->setCompleted(true);
+
+            $challengeRepository->save($challenge, true);
+        }
+
+        return $this->redirectToRoute('dashboard', [], Response::HTTP_SEE_OTHER);
     }
 }

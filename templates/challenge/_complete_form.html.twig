@@ -1,0 +1,4 @@
+<form id="form-complete-{{ challenge.id }}" class="is-hidden" method="post" action="{{ path('app_challenge_complete', {'id': challenge.id}) }}">
+	<input type="hidden" name="_token" value="{{ csrf_token('complete' ~ challenge.id) }}">
+</form>
+

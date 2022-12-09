@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Challenge;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +41,91 @@ class ChallengeRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Challenge[] Returns an array of Challenge objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * 
+     *
+     * @param string $userId
+     * @return Challenge[]
+     */
+    public function findAllActiveByUser(User $user): array
+    {
 
-//    public function findOneBySomeField($value): ?Challenge
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.challengeUsers', 'u', Join::WITH, 'u.user = :user')
+            ->andWhere('u.completed = :completed')
+            ->setParameter('user', $user->getId())
+            ->setParameter('completed', false)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * 
+     *
+     * @param string $userId
+     * @return Challenge[]
+     */
+    public function findAllCompletedByUser(User $user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.challengeUsers', 'u', Join::WITH, 'u.user = :user')
+            ->andWhere('u.completed = :completed')
+            ->setParameter('user', $user->getId())
+            ->setParameter('completed', true)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllInactive(User $user)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c', 'author')
+            ->innerJoin('c.author', 'author')
+            ->where('c NOT IN (SELECT (cu.challenge) FROM App:UserChallenge cu WHERE cu.user = :user)')
+            ->setParameter('user', $user->getId())
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * 
+     *
+     * @param mixed $id
+     * @return Challenge|null
+     */
+    public function findWithUsers($id)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c', 'users')
+            ->innerJoin('c.challengeUsers', 'users')
+            ->where('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    //    /**
+    //     * @return Challenge[] Returns an array of Challenge objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('c.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Challenge
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

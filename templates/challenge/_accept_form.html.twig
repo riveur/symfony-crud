@@ -1,0 +1,5 @@
+<form id="form-accept-{{ challenge.id }}" class="is-hidden" method="post" action="{{ path('app_challenge_accept', {'id': challenge.id})  }}" onsubmit="return confirm('Are you sure you want to accept this challenge ?');">
+	<input type="hidden" name="_token" value="{{ csrf_token('accept' ~ challenge.id) }}">
+</form>
+<a onclick="document.querySelector('#form-accept-{{ challenge.id }}').submit()" class="card-footer-item">Accept</a>
+

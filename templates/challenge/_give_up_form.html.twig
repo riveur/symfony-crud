@@ -1,0 +1,4 @@
+<form id="form-give-up-{{ challenge.id }}" class="is-hidden" method="post" action="{{ path('app_challenge_give_up', {'id': challenge.id})  }}" onsubmit="return confirm('Are you sure you want to give up this challenge ?');">
+	<input type="hidden" name="_token" value="{{ csrf_token('give-up' ~ challenge.id) }}">
+</form>
+
