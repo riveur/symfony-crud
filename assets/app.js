@@ -11,8 +11,10 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 import 'bulma/css/bulma.min.css'
 
 import { initToggleButtons } from './js/ButtonToggle.js'
+import { initDeleteButton as initBulmaNotificationDeleteButton } from './js/BulmaNotification.js'
 
 initToggleButtons()
+initBulmaNotificationDeleteButton()
 
 // start the Stimulus application
 // import './bootstrap';
