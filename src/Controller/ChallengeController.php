@@ -44,6 +44,8 @@ class ChallengeController extends AbstractController
 
             $challengeRepository->save($challenge, true);
 
+            $this->addFlash('success', 'Your challenge has been created !');
+
             return $this->redirectToRoute('app_challenge_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -75,6 +77,8 @@ class ChallengeController extends AbstractController
             $challenge->setUpdatedAt(new DateTimeImmutable());
             $challengeRepository->save($challenge, true);
 
+            $this->addFlash('success', 'Your changes has been applied !');
+
             return $this->redirectToRoute('app_challenge_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -92,6 +96,10 @@ class ChallengeController extends AbstractController
             $challenge->getAuthor()->getId() === $this->getUser()->getId()
         ) {
             $challengeRepository->remove($challenge, true);
+
+            $this->addFlash('success', 'Challenge removed successfully !');
+        } else {
+            $this->addFlash('danger', 'You are not able to delete this.');
         }
 
         return $this->redirectToRoute('app_challenge_index', [], Response::HTTP_SEE_OTHER);
@@ -109,6 +117,10 @@ class ChallengeController extends AbstractController
             $challenge->addUserChallenge($userChallenge);
 
             $challengeRepository->save($challenge, true);
+
+            $this->addFlash('success', 'You have accepted the challenge: ' . $challenge->getTitle());
+        } else {
+            $this->addFlash('danger', 'You can\'t accept this challenge.');
         }
 
         return $this->redirectToRoute('dashboard', [], Response::HTTP_SEE_OTHER);
@@ -129,6 +141,10 @@ class ChallengeController extends AbstractController
             $challenge->removeUserChallenge($userChallenge);
 
             $challengeRepository->save($challenge, true);
+
+            $this->addFlash('success', 'You give up the challenge: ' . $challenge->getTitle());
+        } else {
+            $this->addFlash('danger', 'You can\'t give up this challenge.');
         }
 
         return $this->redirectToRoute('dashboard', [], Response::HTTP_SEE_OTHER);
@@ -149,6 +165,10 @@ class ChallengeController extends AbstractController
             $userChallenge->setCompleted(true);
 
             $challengeRepository->save($challenge, true);
+
+            $this->addFlash('success', 'You completed the challenge: ' . $challenge->getTitle());
+        } else {
+            $this->addFlash('danger', 'You can\'t complete this challenge.');
         }
 
         return $this->redirectToRoute('dashboard', [], Response::HTTP_SEE_OTHER);

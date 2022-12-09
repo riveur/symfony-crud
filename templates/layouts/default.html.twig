@@ -21,8 +21,21 @@
             {{ include('elements/header.html.twig') }}
         {% endif %}
         <main>
-            <div class="container"> {% block body %}{% endblock %}
-                </div>
-            </main>
-        </body>
-    </html>
+            <div class="container">
+                {% if app.session.flashbag.peekAll() is not empty %}
+                    <section class="section pb-0">
+                        {% for label, messages in app.flashes(['warning', 'success', 'danger']) %}
+                            {% for message in messages %}
+                                <div class="notification is-{{ label }}">
+                                    <button class="delete"></button>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </section>
+                {% endif %}
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+    </body>
+</html>

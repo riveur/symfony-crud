@@ -56,6 +56,8 @@ class AuthController extends AbstractController
             $em->persist($user);
             $em->flush();
 
+            $this->addFlash('success', 'Your account have successfully be created.');
+
             return $this->redirectToRoute('app_login');
         }
 
